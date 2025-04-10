@@ -2,34 +2,25 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = 'https://carros-electricos.wiremockapi.cloud';
+  static const String baseUrl = 'https://67f7d1812466325443eadd17.mockapi.io/carros';
 
-  static Future<String?> login(String username, String password) async {
-    final url = Uri.parse('$baseUrl/auth');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'username': username, 'password': password}),
-    );
+  static Future<List<dynamic>> getCarros() async {
+    final response = await http.get(Uri.parse(baseUrl));
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['token'];
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Error al obtener los carros');
     }
-    return null;
   }
 
-  static Future<List<Map<String, dynamic>>> getCars(String token) async {
-    final url = Uri.parse('$baseUrl/carros');
-    final response = await http.get(
-      url,
-      headers: {'Authorization': 'Bearer $token'},
-    );
+  static Future<dynamic> getCarroPorId(String id) async {
+    final response = await http.get(Uri.parse('$baseUrl/$id'));
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return List<Map<String, dynamic>>.from(data);
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Carro no encontrado');
     }
-    throw Exception('Error al obtener los carros');
   }
 }
